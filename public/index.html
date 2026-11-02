@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent Arena — غرفة قيادة الشركة</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23f5a524'/%3E%3Cpath d='M9 22 16 9l7 13z' fill='%23101014'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <svg viewBox="0 0 32 32" aria-hidden="true" class="mark"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M9 22 16 9l7 13z" fill="#101014"/></svg>
+        <div>
+          <h1 data-i18n="app.title">Agent Arena</h1>
+          <p data-i18n="app.subtitle">شركة تجارة افتراضية يديرها ستة وكلاء</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <label class="field">
+          <span data-i18n="controls.scenario">السوق</span>
+          <select id="scenario"></select>
+        </label>
+        <label class="field">
+          <span data-i18n="controls.mode">الوضع</span>
+          <select id="mode">
+            <option value="ai" data-i18n="mode.ai">شركة الوكلاء</option>
+            <option value="baseline" data-i18n="mode.baseline">الخط الأساسي</option>
+          </select>
+        </label>
+        <button id="start" class="btn primary" data-i18n="controls.start">ابدأ التشغيل</button>
+        <button id="pause" class="btn" data-i18n="controls.pause">إيقاف مؤقت</button>
+        <button id="step" class="btn" data-i18n="controls.step">يوم واحد</button>
+        <button id="reset" class="btn danger" data-i18n="controls.reset">إعادة تعيين</button>
+        <button id="lang" class="btn ghost" aria-label="Language">EN</button>
+      </div>
+    </header>
+
+    <div class="statusline">
+      <span id="statusChip" class="chip">—</span>
+      <span class="progress"><span id="progressBar"></span></span>
+      <span id="dayLabel" class="mono">0 / 90</span>
+      <span id="runLabel" class="muted mono"></span>
+    </div>
+
+    <main class="grid">
+      <section class="card span-12 kpis" id="kpis"></section>
+
+      <section class="card span-7">
+        <header><h2 data-i18n="dash.capital">رأس المال</h2><span class="muted" id="capitalHint"></span></header>
+        <div id="capitalChart" class="chart"></div>
+        <div id="financials" class="fin-grid"></div>
+      </section>
+
+      <section class="card span-5">
+        <header><h2 data-i18n="dash.market">السوق والأحداث</h2></header>
+        <div id="events" class="events"></div>
+        <h3 data-i18n="dash.policy">حدود السياسة</h3>
+        <div id="policy" class="kv"></div>
+      </section>
+
+      <section class="card span-7">
+        <header><h2 data-i18n="dash.agents">الوكلاء</h2><span class="muted" id="agentHint"></span></header>
+        <div id="agents" class="agents"></div>
+      </section>
+
+      <section class="card span-5">
+        <header><h2 data-i18n="dash.timeline">قرارات المجلس</h2></header>
+        <div id="timeline" class="timeline" tabindex="0" role="region" aria-label="Decision timeline"></div>
+      </section>
+
+      <section class="card span-6">
+        <header><h2 data-i18n="dash.inventory">المخزون</h2></header>
+        <div id="inventory" class="table-wrap"></div>
+      </section>
+
+      <section class="card span-6">
+        <header><h2 data-i18n="dash.suppliers">الموردون</h2></header>
+        <div id="suppliers" class="table-wrap"></div>
+        <h3 data-i18n="dash.purchaseOrders">أوامر الشراء</h3>
+        <div id="purchaseOrders" class="table-wrap compact"></div>
+      </section>
+
+      <section class="card span-6">
+        <header><h2 data-i18n="dash.audit">سجل التدقيق</h2><span class="muted" id="auditCount"></span></header>
+        <div id="audit" class="log" tabindex="0" role="log" aria-label="Audit log"></div>
+      </section>
+
+      <section class="card span-6">
+        <header><h2 data-i18n="dash.eval">مقارنة التقييم</h2><span class="muted" id="evalHint"></span></header>
+        <div id="evaluation" class="table-wrap"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span class="mono" id="buildInfo">agent-arena</span>
+      <span class="muted" data-i18n="footer.note">محاكاة مالية بالكامل: لا مشتريات ولا تحويلات حقيقية.</span>
+    </footer>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

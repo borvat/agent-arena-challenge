@@ -1,0 +1,9 @@
+node_modules/
+data/
+test-results/
+playwright-report/
+.env
+.env.local
+scratch/
+*.log
+.DS_Store

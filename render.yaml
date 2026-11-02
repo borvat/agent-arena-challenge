@@ -1,0 +1,22 @@
+# Render blueprint for a free Node web service.
+# Prepared but NOT deployed: creating a service needs the account owner's API key
+# and explicit approval (see docs/EVIDENCE.md, deployment section).
+services:
+  - type: web
+    name: agent-arena
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    autoDeploy: false
+    envVars:
+      - key: NODE_VERSION
+        value: 22.17.1
+      - key: DISABLE_LLM
+        value: "1" # free instance runs the deterministic fallback company until a model key is approved
+      - key: SPEED_MS
+        value: "150"
+      - key: DEEPSEEK_API_KEY
+        sync: false # set in the dashboard, never in the repo

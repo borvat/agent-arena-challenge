@@ -1,0 +1,22 @@
+{
+  "name": "agent-arena-challenge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Agent Arena — autonomous six-agent trading company vs deterministic baseline, on one authoritative event-driven simulation engine.",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/*.test.js",
+    "test:e2e": "playwright test",
+    "evaluate": "node scripts/evaluate.js",
+    "verify": "node scripts/verify.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "axe-core": "^4.14.0"
+  }
+}
