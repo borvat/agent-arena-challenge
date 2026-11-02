@@ -123,6 +123,15 @@ a promotion and has no memory. Model calls, tokens and cost are recorded per age
 
 Full results, cost report, security results and the honest verdict: **[docs/EVIDENCE.md](docs/EVIDENCE.md)**.
 
+Headline from the recorded run (630 calls, 0 failures, $0.79): the agents **lose steady-growth by 3.6 %**,
+**lose supply-shock by 2.1 %**, **win liquidity-crunch by 0.17 %** and **win the unseen scenario by 0.14 %** —
+with a **higher gross margin in all four** (+1.2 to +3.8 pp) and a lower service level in two of them.
+
+- Live: https://agent-arena-isolated-test.onrender.com (free plan, deterministic fallback company, no model key on the host)
+- Evaluation detail: [docs/EVALUATION-RESULTS.md](docs/EVALUATION-RESULTS.md)
+- Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- Skills used and what they changed: [docs/SKILLS.md](docs/SKILLS.md)
+
 ## Security posture
 
 - the model credential is read from the environment; it is never sent to the browser, never logged, and
