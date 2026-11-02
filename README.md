@@ -131,6 +131,7 @@ with a **higher gross margin in all four** (+1.2 to +3.8 pp) and a lower service
 - Evaluation detail: [docs/EVALUATION-RESULTS.md](docs/EVALUATION-RESULTS.md)
 - Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - Skills used and what they changed: [docs/SKILLS.md](docs/SKILLS.md)
+- Owner decision and the standing constraints: [docs/OWNER-DECISION.md](docs/OWNER-DECISION.md)
 
 ## Security posture
 

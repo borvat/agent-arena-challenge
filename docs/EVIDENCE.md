@@ -1,7 +1,8 @@
 # Delivery evidence
 
-Verdict: **DEMO READY, LIVE** — stages 1–7 pass with evidence below; stage 8 (owner acceptance) is the
-owner's call, not mine.
+Verdict: **READY within the accepted pilot scope** — stages 1–7 passed with evidence, stage 8 accepted by the
+owner on 2026-11-02 (`docs/OWNER-DECISION.md`). Not production readiness: authentication, multi-tenant
+isolation and durable storage are out of scope and named below.
 
 Repository: https://github.com/borvat/agent-arena-challenge
 Live: https://agent-arena-isolated-test.onrender.com (Render free plan, frankfurt, `srv-dbk0ei2jnfac73981140`)
@@ -17,7 +18,7 @@ Live: https://agent-arena-isolated-test.onrender.com (Render free plan, frankfur
 | 5 | GitHub | **PASS** | public repo `borvat/agent-arena-challenge`, branch `master`, deployed code commit `e4ab554`; **no CI workflow** → "checks read" is N/A |
 | 6 | Deployment | **PASS** | service created via Render API, `plan: free`, region frankfurt, `autoDeploy: no`; deploy `dep-dbk0g26tlv9c73efp04g` reached **live** |
 | 7 | Live verification | **PASS** | `/api/health` returned commit `e4ab55492123…` = the code commit that was HEAD at verification time; every commit after it is documentation only. A full 90-day run executed **on the live host** and produced equity **193,802.76**, identical to the local baseline for the same seed (193,803) |
-| 8 | Owner acceptance | **PENDING** | requires the owner to look at the live build |
+| 8 | Owner acceptance | **ACCEPTED** | owner accepted the pilot and the comparison as reported on 2026-11-02; record and standing constraints in `docs/OWNER-DECISION.md`. The model stays disabled on the public host. |
 
 Not established (stated, not implied): multi-user concurrency (one live run slot per process), model-backed
 agents on the hosted instance (deliberately disabled — see below), durability across a Render restart (free
