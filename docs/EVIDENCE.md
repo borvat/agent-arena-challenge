@@ -14,9 +14,9 @@ Live: https://agent-arena-isolated-test.onrender.com (Render free plan, frankfur
 | 2 | Automated testing | **PASS** | `node --test tests/*.test.js` → **40/40 pass**; `node scripts/verify.js` → **23/23 checks** |
 | 3 | Browser E2E | **PASS** | `npx playwright test` → **7/7 pass**; `scripts/browser-evidence.js` → 0 console errors, `dir` rtl↔ltr, **0 px** horizontal overflow at 1440 and 390 px, axe-core **0 violations** (22 rules passing) |
 | 4 | Security review | **PASS** | mutation probes refused with `403` on POST/PUT/PATCH/DELETE; credential absent from all public responses; CSP/frame-deny/nosniff present; path traversal refused; 64 KB body cap; trusted-IP rate limiting. Limits named below |
-| 5 | GitHub | **PASS** | public repo `borvat/agent-arena-challenge`, branch `master`, deployed commit `e4ab554`; **no CI workflow** → "checks read" is N/A |
+| 5 | GitHub | **PASS** | public repo `borvat/agent-arena-challenge`, branch `master`, deployed code commit `e4ab554`; **no CI workflow** → "checks read" is N/A |
 | 6 | Deployment | **PASS** | service created via Render API, `plan: free`, region frankfurt, `autoDeploy: no`; deploy `dep-dbk0g26tlv9c73efp04g` reached **live** |
-| 7 | Live verification | **PASS** | `/api/health` returned commit `e4ab55492123…` = `git rev-parse HEAD`; a full 90-day run executed **on the live host** and produced equity **193,802.76**, identical to the local baseline for the same seed (193,803) |
+| 7 | Live verification | **PASS** | `/api/health` returned commit `e4ab55492123…` = the code commit that was HEAD at verification time; every commit after it is documentation only. A full 90-day run executed **on the live host** and produced equity **193,802.76**, identical to the local baseline for the same seed (193,803) |
 | 8 | Owner acceptance | **PENDING** | requires the owner to look at the live build |
 
 Not established (stated, not implied): multi-user concurrency (one live run slot per process), model-backed
