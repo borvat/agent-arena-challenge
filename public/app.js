@@ -160,8 +160,12 @@ function renderStatus() {
 function renderKpis() {
   const el = $('#kpis');
   const s = state.snap;
+  // Same three rows as a real KPI (label, value, sub) so filling them in cannot change the height.
+  const placeholder = (label) => `<div class="kpi"><div class="label">${esc(label)}</div><div class="value">—</div><div class="sub">&nbsp;</div></div>`;
+  const kpiLabels = [t('kpi.equity'), t('kpi.cash'), t('kpi.revenue'), t('kpi.margin'), t('kpi.fill'), t('kpi.inventory'), t('kpi.runway'), t('kpi.violations')];
   if (!s) {
-    el.innerHTML = `<div class="empty">${esc(t('status.noRun'))}</div>`;
+    // Keep the strip at its final height before data arrives: a collapsing row is a layout shift.
+    el.innerHTML = kpiLabels.map(placeholder).join('');
     return;
   }
   const k = s.state;
@@ -323,7 +327,9 @@ function renderTimeline() {
   const el = $('#timeline');
   const s = state.snap;
   if (!s || !s.lastCycle) {
-    el.innerHTML = `<div class="empty">${esc(t('status.noRun'))}</div>`;
+    el.innerHTML = Array.from({ length: 3 })
+      .map((_, i) => `<div class="tl-item placeholder"><div class="head"><span>C${i + 1}</span><span>—</span></div><div class="acts"><span class="pill">—</span></div></div>`)
+      .join('');
     return;
   }
   const cycle = s.lastCycle;
@@ -356,7 +362,7 @@ function renderInventory() {
   const el = $('#inventory');
   const s = state.snap;
   if (!s) {
-    el.innerHTML = '<div class="empty">—</div>';
+    el.innerHTML = `<table><thead><tr><th>${esc(t('th.sku'))}</th><th>${esc(t('th.onhand'))}</th><th>${esc(t('th.inbound'))}</th><th>${esc(t('th.cover'))}</th><th>${esc(t('th.price'))}</th><th>${esc(t('th.comp'))}</th></tr></thead><tbody>${Array.from({ length: 4 }).map(() => '<tr><td>—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>').join('')}</tbody></table>`;
     return;
   }
   const inv = s.state.inventory;
@@ -389,7 +395,8 @@ function renderSuppliers() {
   const el = $('#suppliers');
   const s = state.snap;
   if (!s) {
-    el.innerHTML = '<div class="empty">—</div>';
+    el.innerHTML = `<table><thead><tr><th>${esc(t('th.supplier'))}</th><th>${esc(t('th.reliability'))}</th><th>${esc(t('th.lead'))}</th><th>${esc(t('th.quote'))}</th><th>${esc(t('th.window'))}</th></tr></thead><tbody>${Array.from({ length: 4 }).map(() => '<tr><td>—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td>—</td></tr>').join('')}</tbody></table>`;
+    $('#purchaseOrders').innerHTML = '';
     return;
   }
   const skus = Object.keys(s.state.prices);
@@ -446,7 +453,11 @@ function renderAudit(count) {
       return `<div class="log-row ${cls}"><span class="d">d${esc(e.day)}</span><span class="a">${esc(e.actor)}</span><span class="t">${esc(e.detail)}</span></div>`;
     })
     .join('');
-  el.innerHTML = rows || `<div class="empty">${esc(t('common.none'))}</div>`;
+  el.innerHTML =
+    rows ||
+    Array.from({ length: 6 })
+      .map(() => '<div class="log-row"><span class="d">—</span><span class="a">—</span><span class="t">—</span></div>')
+      .join('');
 }
 
 async function loadEvaluation() {

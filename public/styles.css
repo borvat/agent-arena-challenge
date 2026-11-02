@@ -89,7 +89,14 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   padding: 10px 22px;
   border-block-end: 1px solid var(--line);
   font-size: 12px;
+  /* A long run id must not wrap: wrapping grows the bar and shifts the whole grid. */
+  flex-wrap: nowrap;
+  height: 42px;
+  overflow: hidden;
 }
+#runLabel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+#dayLabel { white-space: nowrap; }
+#statusChip { white-space: nowrap; flex: 0 0 auto; }
 .chip {
   font-size: 11px;
   padding: 3px 10px;
@@ -207,6 +214,35 @@ td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 }
 
 .empty { color: var(--muted); font-size: 12px; padding: 10px 0; }
+
+
+/* Reserve space for every data panel so client-side rendering does not shift the page.
+   Measured before/after with lighthouse CLS in the acceptance gate. */
+.kpis { min-height: 86px; }
+.agents { min-height: 196px; }
+.timeline { min-height: 220px; }
+.log { min-height: 200px; }
+.table-wrap { min-height: 150px; }
+#purchaseOrders { min-height: 90px; }
+#evaluation { min-height: 120px; }
+#events { min-height: 92px; }
+#policy { min-height: 168px; }
+.chart { min-height: 150px; }
+.tl-item.placeholder { opacity: 0.4; }
+
+
+/* Desktop: pin the data panels to the height they settle at, so the first snapshot
+   replaces placeholders in place instead of pushing the page down. */
+@media (min-width: 900px) {
+  .agents { height: 300px; overflow: auto; }
+  .timeline { height: 420px; }
+  .log { height: 320px; }
+  #inventory, #suppliers { height: 220px; }
+  #purchaseOrders { height: 120px; }
+  #evaluation { height: 200px; }
+  #events { height: 120px; overflow: auto; }
+  #policy { height: 190px; overflow: auto; }
+}
 
 @media (max-width: 1080px) {
   .span-7, .span-6, .span-5 { grid-column: span 12; }

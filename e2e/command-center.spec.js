@@ -73,6 +73,11 @@ test('pause freezes the simulation and resume continues it', async ({ page }) =>
   await startRun(page, 'ai');
   await expect(page.locator('#dayLabel')).not.toHaveText('0 / 90', { timeout: 45_000 });
 
+  // If the previous test's run already finished, reset so the pause has something to freeze.
+  if (/منتهٍ|finished/.test((await page.locator('#statusChip').textContent()) || '')) {
+    await page.click('#reset');
+    await expect(page.locator('#dayLabel')).not.toHaveText('0 / 90', { timeout: 20_000 });
+  }
   await page.click('#pause');
   await expect(page.locator('#statusChip')).toHaveText(/متوقف مؤقتاً|paused/);
 
