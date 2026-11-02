@@ -17,6 +17,14 @@ baseline winning two of four markets.
    `docs/EVALUATION-RESULTS.md`, `data/eval-report.json` locally, `data/failure-recovery.json`).
 6. Future LLM enablement is documented below and **not implemented**.
 
+## Verification-lab gate
+
+Run on 2026-11-02 with `--owner-accepted` against the live service. Stages 1–4, 6, 7 and 7.1 passed; stage 5
+is N/A (no CI); **stage 7.2 failed** because a free Render web service cannot attach durable storage, so run
+snapshots are lost on restart or sleep-wake. Local persistence across a real process restart passed (7.1).
+Fixing 7.2 requires a new resource (free Key Value / Postgres) or a paid disk, i.e. an owner decision that
+has not been taken. Full report: `docs/gate-report.json`, summary: `docs/EVIDENCE.md`.
+
 ## Frozen results
 
 The evaluation recorded on 2026-11-02 is final and is not to be re-picked: 630 calls, 0 failures, $0.7906.

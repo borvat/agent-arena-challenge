@@ -7,17 +7,54 @@ isolation and durable storage are out of scope and named below.
 Repository: https://github.com/borvat/agent-arena-challenge
 Live: https://agent-arena-isolated-test.onrender.com (Render free plan, frankfurt, `srv-dbk0ei2jnfac73981140`)
 
+## Verification-lab gate (`vlab gate`, 2026-11-02 04:30 UTC)
+
+Run against `gate.config.agent-arena.json`, project `C:/Users/Zulik/agent-arena`, live target
+`https://agent-arena-isolated-test.onrender.com`, `--owner-accepted`. Full machine report:
+`docs/gate-report.json`.
+
+| Stage | Result | Evidence |
+|---|---|---|
+| 1 implementation | PASS | `node --check` clean on server, world, orchestrator, app |
+| 2 automated tests | PASS | 40/40 unit + 23/23 verification checks |
+| 3 browser E2E | PASS | 7 passed |
+| 3.1 accessibility | PASS | 0 serious/critical, 0 minor/moderate |
+| 3.2 performance | PASS | LCP 751 ms, **CLS 0.023**, TBT 287 ms |
+| 4 security review | PASS | 7 checks; 1 info finding (a password-shaped fixture string in a test, review only) |
+| 5 github | N/A | no PR on `master`; 0 uncommitted paths |
+| 6 deployment | PASS | live 200, commit `41e376c`, uptime 344 s |
+| 7 live revision | PASS | served `41e376c` == HEAD `41e376c` |
+| 7.1 persistence (local restart) | PASS | created record survived a real process restart |
+| 7.2 persistence (live target) | **FAIL** | free plan cannot attach a disk; snapshots are lost on restart/sleep |
+| 8 owner acceptance | PASS | accepted explicitly |
+
+**Gate verdict: BLOCKED — solely on stage 7.2.** Every functional stage passes; the single failure is the
+hosting storage class, not the application. Unblock options, both owner decisions: a free Render Key Value /
+Postgres instance to hold snapshots (new resource), or a paid disk (cost). The accepted pilot keeps the free
+plan, so the limitation stays and is reported rather than reclassified.
+
+Two defects the gate found and that were fixed rather than explained away:
+
+- **Layout shift (stage 3.2)**: CLS was **0.626** on a live run — panels collapsed to near-zero height
+  before the first snapshot and grew when data arrived, moving the whole grid. Fixed by rendering
+  full-height placeholders (KPI rows with their sub line, agent cards, tables, log, timeline) and pinning
+  desktop panel heights. Re-measured: **0.023**.
+- **Accessibility scan (stage 3.1) was BLOCKED, not clean**: the scanner waited for `networkidle`, which
+  never fires on a page that holds an open SSE stream. The lab's a11y script now waits for `load` plus a
+  bounded settle. The scan then ran on the real page and found 0 violations. The app's CSP was not weakened
+  to make this pass.
+
 ## The eight stages
 
 | # | Stage | Result | Evidence |
 |---|---|---|---|
 | 1 | Implementation | **PASS** | `node --check` clean on `server.js`, `src/*.js`, `public/app.js`, `scripts/*.js`; every module loads and the server binds a port |
 | 2 | Automated testing | **PASS** | `node --test tests/*.test.js` → **40/40 pass**; `node scripts/verify.js` → **23/23 checks** |
-| 3 | Browser E2E | **PASS** | `npx playwright test` → **7/7 pass**; `scripts/browser-evidence.js` → 0 console errors, `dir` rtl↔ltr, **0 px** horizontal overflow at 1440 and 390 px, axe-core **0 violations** (22 rules passing) |
+| 3 | Browser E2E | **PASS** | `npx playwright test` → **7/7**; `vlab gate` stage 3 → **7 passed**; axe-core **0 violations** (stage 3.1); lighthouse desktop **LCP 751 ms, CLS 0.023, TBT 287 ms** (stage 3.2) |
 | 4 | Security review | **PASS** | mutation probes refused with `403` on POST/PUT/PATCH/DELETE; credential absent from all public responses; CSP/frame-deny/nosniff present; path traversal refused; 64 KB body cap; trusted-IP rate limiting. Limits named below |
-| 5 | GitHub | **PASS** | public repo `borvat/agent-arena-challenge`, branch `master`, deployed code commit `e4ab554`; **no CI workflow** → "checks read" is N/A |
+| 5 | GitHub | **PASS** | public repo `borvat/agent-arena-challenge`, branch `master`, deployed code commit `41e376c`; **no CI workflow** → "checks read" is N/A |
 | 6 | Deployment | **PASS** | service created via Render API, `plan: free`, region frankfurt, `autoDeploy: no`; deploy `dep-dbk0g26tlv9c73efp04g` reached **live** |
-| 7 | Live verification | **PASS** | `/api/health` returned commit `e4ab55492123…` = the code commit that was HEAD at verification time; every commit after it is documentation only. A full 90-day run executed **on the live host** and produced equity **193,802.76**, identical to the local baseline for the same seed (193,803) |
+| 7 | Live verification | **PASS** | `/api/health` returned commit `41e376c` = the code commit that was HEAD at verification time; every commit after it is documentation only. A full 90-day run executed **on the live host** and produced equity **193,802.76**, identical to the local baseline for the same seed (193,803) |
 | 8 | Owner acceptance | **ACCEPTED** | owner accepted the pilot and the comparison as reported on 2026-11-02; record and standing constraints in `docs/OWNER-DECISION.md`. The model stays disabled on the public host. |
 
 Not established (stated, not implied): multi-user concurrency (one live run slot per process), model-backed

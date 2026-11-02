@@ -1,0 +1,184 @@
+{
+  "gate": "agent-arena",
+  "verdict": "BLOCKED",
+  "at": "2026-11-02T04:33:20.542Z",
+  "project": "C:/Users/Zulik/agent-arena",
+  "live": "https://agent-arena-isolated-test.onrender.com",
+  "scope": {
+    "deployment": "verify",
+    "ci": false
+  },
+  "stages": [
+    {
+      "stage": 1,
+      "name": "implementation (syntax/build)",
+      "status": "PASS",
+      "detail": "node --check server.js: clean | node --check src/world.js: clean | node --check src/orchestrator.js: clean | node --check public/app.js: clean",
+      "evidence": [
+        {
+          "cmd": "node --check server.js",
+          "code": 0,
+          "tail": ""
+        },
+        {
+          "cmd": "node --check src/world.js",
+          "code": 0,
+          "tail": ""
+        },
+        {
+          "cmd": "node --check src/orchestrator.js",
+          "code": 0,
+          "tail": ""
+        },
+        {
+          "cmd": "node --check public/app.js",
+          "code": 0,
+          "tail": ""
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "name": "automated tests",
+      "status": "PASS",
+      "detail": "ok 40 - run: an interrupted run can be resumed from its snapshot by rebuilding state | 23/23 checks passed",
+      "evidence": [
+        {
+          "cmd": "node --test tests/agents.test.js tests/board.test.js tests/engine.test.js tests/security.test.js tests/simulation.test.js",
+          "code": 0,
+          "tail": "ok 40 - run: an interrupted run can be resumed from its snapshot by rebuilding state"
+        },
+        {
+          "cmd": "node scripts/verify.js",
+          "code": 0,
+          "tail": "23/23 checks passed"
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "name": "browser E2E (playwright)",
+      "status": "PASS",
+      "detail": "7 passed",
+      "evidence": {
+        "code": 0,
+        "output": "Running 7 tests using 1 worker\n\n  ok 1 [chromium-cached] › tests\\agent-arena.spec.mjs:21:1 › command centre loads in Arabic RTL with the policy limits and six agents (3.2s)\n  ok 2 [chromium-cached] › tests\\agent-arena.spec.mjs:34:1 › language toggle flips direction and copy without a reload (4.3s)\n  ok 3 [chromium-cached] › tests\\agent-arena.spec.mjs:45:1 › an agent-company run advances the day counter and populates the dashboards (10.9s)\n  ok 4 [chromium-cached] › tests\\agent-arena.spec.mjs:71:1 › pause freezes the simulation and resume continues it (7.0s)\n  ok 5 [chromium-cached] › tests\\agent-arena.spec.mjs:105:1 › reset starts a fresh run from day zero (3.9s)\n  ok 6 [chromium-cached] › tests\\agent-arena.spec.mjs:127:1 › the equity painted in the UI equals the value the API returns (4.3s)\n  ok 7 [chromium-cached] › tests\\agent-arena.spec.mjs:153:1 › the command centre does not overflow horizontally on a phone viewport (3.0s)\n\n  7 passed (53.4s)"
+      }
+    },
+    {
+      "stage": 3.1,
+      "name": "accessibility (axe-core)",
+      "status": "PASS",
+      "detail": "0 serious/critical, 0 minor/moderate",
+      "evidence": null
+    },
+    {
+      "stage": 3.2,
+      "name": "performance (lighthouse)",
+      "status": "PASS",
+      "detail": "LCP 751ms | CLS 0.023 | TBT 287ms | FCP 370ms (exit 0)",
+      "evidence": {
+        "code": 0,
+        "out": "Lighthouse 12.8.2 (desktop) - http://127.0.0.1:8825\n  performance 88 | a11y 98 | best-practices 96 | seo 90\n  LCP 751ms | CLS 0.023 | TBT 287ms | FCP 370ms\nreport: C:\\Users\\Zulik\\verification-lab\\out\\agent-arena-perf.json"
+      }
+    },
+    {
+      "stage": 4,
+      "name": "security review",
+      "status": "PASS",
+      "detail": "7 checks, 1 findings :: info:hardcoded credential assignment in tests/agents.test.js (test fixture, review only)",
+      "evidence": {
+        "passes": [
+          "content-security-policy",
+          "x-content-type-options",
+          "x-frame-options",
+          "referrer-policy",
+          "authorization probes (2)",
+          "secrets scan (35 tracked files)",
+          "npm audit"
+        ],
+        "findings": [
+          {
+            "sev": "info",
+            "what": "hardcoded credential assignment in tests/agents.test.js (test fixture, review only)"
+          }
+        ]
+      }
+    },
+    {
+      "stage": 5,
+      "name": "github (branch/PR/checks)",
+      "status": "N/A",
+      "detail": "branch master has no PR; 0 uncommitted path(s) in the working tree",
+      "evidence": {
+        "branch": "master",
+        "dirty": 0
+      }
+    },
+    {
+      "stage": 6,
+      "name": "deployment (public HTTP)",
+      "status": "PASS",
+      "detail": "https://agent-arena-isolated-test.onrender.com -> 200 on attempt 1, version ?, commit 41e376c, uptime 344s",
+      "evidence": {
+        "health": {
+          "ok": true,
+          "service": "agent-arena",
+          "commit": "41e376c13346dc78d31f6aa9428c4481a6602995",
+          "node": "v22.17.1",
+          "uptimeSeconds": 344,
+          "model": {
+            "name": "deepseek-flash",
+            "enabled": false,
+            "thinking": "off"
+          },
+          "prices": {
+            "inputMiss": 0.3,
+            "inputHit": 0.006,
+            "output": 1.2,
+            "offPeakFactor": 0.5
+          }
+        }
+      }
+    },
+    {
+      "stage": 7,
+      "name": "live verification (revision)",
+      "status": "PASS",
+      "detail": "served 41e376c == HEAD 41e376c",
+      "evidence": null
+    },
+    {
+      "stage": 7.1,
+      "name": "persistence (local restart)",
+      "status": "PASS",
+      "detail": "record steady-growth__baseline__live-mvyrk2f1 survived a process restart (runId = steady-growth__baseline__live-mvyrk2f1)",
+      "evidence": {
+        "id": "steady-growth__baseline__live-mvyrk2f1",
+        "before": null,
+        "after": null,
+        "status": 200,
+        "actual": "steady-growth__baseline__live-mvyrk2f1"
+      }
+    },
+    {
+      "stage": 7.2,
+      "name": "persistence (live target)",
+      "status": "FAIL",
+      "detail": "Render free plan cannot attach a disk: run snapshots and the audit log live inside the container and are lost on restart or sleep-wake. Accepted for a demo whose benchmark runs and evidence are produced locally.",
+      "evidence": null
+    },
+    {
+      "stage": 8,
+      "name": "owner acceptance",
+      "status": "PASS",
+      "detail": "owner accepted this build explicitly",
+      "evidence": null
+    }
+  ],
+  "artifacts": {
+    "a11y": "C:\\Users\\Zulik\\verification-lab\\out\\agent-arena-a11y.json",
+    "perf": "C:\\Users\\Zulik\\verification-lab\\out\\agent-arena-perf.json",
+    "e2e": "C:\\Users\\Zulik\\verification-lab\\out\\e2e-report.json"
+  }
+}
