@@ -23,7 +23,7 @@ async function main() {
   fs.mkdirSync(OUT, { recursive: true });
   const server = spawn(process.execPath, ['server.js'], {
     cwd: ROOT,
-    env: { ...process.env, PORT: String(PORT), DISABLE_LLM: '1', SPEED_MS: '0' },
+    env: { ...process.env, PORT: String(PORT), SPEED_MS: '0' },
     stdio: ['ignore', 'pipe', 'pipe']
   });
   const ready = new Promise((resolve, reject) => {
@@ -39,7 +39,29 @@ async function main() {
   await ready;
 
   const listing = await (await fetch(`${BASE}/api/runs`)).json();
-  const runId = process.argv[2] || (listing.runs.find((r) => r.mode === 'ai' && r.status === 'finished') || {}).runId;
+  let runId = process.argv[2] || (listing.runs.find((r) => r.mode === 'ai' && r.status === 'finished') || {}).runId;
+
+  // --fresh-ai starts a real model-backed 90-day run and screenshots that, so the
+  // panels that only exist in a live run (audit tail, rolling cover, agent text) are real.
+  if (process.argv.includes('--fresh-ai')) {
+    const created = await (
+      await fetch(`${BASE}/api/runs`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ scenarioId: 'steady-growth', mode: 'ai', speedMs: 0 })
+      })
+    ).json();
+    runId = created.runId;
+    process.stdout.write(`live run ${runId} `);
+    for (let i = 0; i < 240; i += 1) {
+      const snap = await (await fetch(`${BASE}/api/runs/${encodeURIComponent(runId)}`)).json();
+      if (['finished', 'bankrupt', 'failed'].includes(snap.state.status)) break;
+      await new Promise((r) => setTimeout(r, 1500));
+      if (i % 10 === 0) process.stdout.write('.');
+    }
+    process.stdout.write('\n');
+  }
+
   if (!runId) throw new Error('no finished AI run found; run scripts/evaluate.js first');
   const url = `${BASE}/?run=${encodeURIComponent(runId)}`;
 

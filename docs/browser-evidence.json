@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-11-02T03:44:06.699Z",
+  "runId": "steady-growth__ai__live-mvypn2wb",
+  "url": "http://127.0.0.1:4181/?run=steady-growth__ai__live-mvypn2wb",
+  "dirAr": "rtl",
+  "dirEn": "ltr",
+  "overflowDesktop": 0,
+  "overflowMobile": 0,
+  "consoleErrors": [],
+  "accessibility": {
+    "violations": [],
+    "passes": 22
+  },
+  "screenshots": [
+    "docs\\screenshots\\command-center-ar.png",
+    "docs\\screenshots\\command-center-en.png",
+    "docs\\screenshots\\command-center-mobile-ar.png",
+    "docs\\screenshots\\a11y-check.png"
+  ]
+}

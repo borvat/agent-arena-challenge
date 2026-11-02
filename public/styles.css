@@ -123,6 +123,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border-radius: var(--radius);
   padding: 16px 18px;
   min-width: 0;
+  align-self: start;
 }
 .card > header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-block-end: 12px; }
 

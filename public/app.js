@@ -362,18 +362,18 @@ function renderInventory() {
   const inv = s.state.inventory;
   const prices = s.state.prices;
   const comp = s.state.competitorPrices;
+  const cover = s.state.cover || {};
   const inbound = {};
   for (const po of s.state.purchaseOrders) if (po.status === 'in_transit') inbound[po.sku] = (inbound[po.sku] || 0) + po.qty;
   const rows = Object.keys(inv)
     .map((sku) => {
-      const sold7 = (s.state.salesOrders || []).filter((o) => o.sku === sku && o.day > s.state.day - 7).reduce((a, o) => a + o.qty, 0);
-      const cover = sold7 > 0 ? Math.round((inv[sku] / (sold7 / 7)) * 10) / 10 : '∞';
-      const under = typeof cover === 'number' && cover < 10;
+      const days = cover[sku] != null ? cover[sku] : '—';
+      const under = typeof days === 'number' && days < 10;
       return `<tr>
         <td><strong>${esc(sku)}</strong></td>
         <td class="num">${esc(num(inv[sku]))}</td>
         <td class="num">${esc(num(inbound[sku] || 0))}</td>
-        <td class="num ${under ? 'neg' : ''}">${esc(cover)}</td>
+        <td class="num ${under ? 'neg' : ''}">${esc(days)}</td>
         <td class="num">${esc(money(prices[sku], 2))}</td>
         <td class="num">${esc(money(comp[sku], 2))}</td>
       </tr>`;
@@ -433,8 +433,11 @@ async function loadAudit() {
 
 function renderAudit(count) {
   const el = $('#audit');
-  $('#auditCount').textContent = count != null ? `${num(count)} ${state.lang === 'ar' ? 'قيد' : 'entries'}` : '';
-  const rows = auditCache
+  // Live runs read /audit; a saved run carries an audit tail inside its snapshot.
+  const source = auditCache.length ? auditCache : (state.snap && state.snap.state && state.snap.state.auditTail) || [];
+  const total = count != null ? count : source.length;
+  $('#auditCount').textContent = `${num(total)} ${state.lang === 'ar' ? 'قيد' : 'entries'}`;
+  const rows = source
     .slice()
     .reverse()
     .slice(0, 80)
@@ -546,6 +549,8 @@ async function loadRun(runId) {
   if (state.loadGen !== gen) return; // a newer run was selected while this request was in flight
   state.snap = snap;
   state.paused = Boolean(state.snap.paused);
+  if (snap.scenario && snap.scenario.id && $('#scenario')) $('#scenario').value = snap.scenario.id;
+  if (snap.mode && $('#mode')) $('#mode').value = snap.mode;
   await loadFinancials();
   if (state.loadGen !== gen) return;
   applyLang();

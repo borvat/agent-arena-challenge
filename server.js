@@ -53,6 +53,32 @@ const slot = {
 
 const rate = new Map();
 
+/**
+ * Older saved runs predate financials in the snapshot. Their KPIs are still engine
+ * numbers, so the statement is rebuilt from them rather than left blank.
+ */
+function deriveFinancials(saved) {
+  const k = saved.kpis || {};
+  const days = (saved.state && saved.state.days) || [];
+  return {
+    balances: { cash: k.finalCash, inventory: k.avgInventoryValue, receivable: (saved.state && saved.state.receivables) || 0, equity: k.finalEquity },
+    pnl: {
+      revenue: k.revenue,
+      cogs: k.cogs,
+      grossProfit: k.grossProfit,
+      grossMarginPct: k.grossMarginPct,
+      opex: k.opex,
+      opexBreakdown: null,
+      netProfit: k.netProfit,
+      netMarginPct: k.revenue ? Math.round((k.netProfit / k.revenue) * 10000) / 100 : 0
+    },
+    cashflow: days.map((d, i) => ({ day: d.day, cash: d.cash, change: i === 0 ? null : Math.round((d.cash - days[i - 1].cash) * 100) / 100 })),
+    ledgerEntries: null,
+    losses: { lostUnits: k.lostUnits, lostRevenue: k.lostRevenue, stockoutDays: k.stockoutDays },
+    derived: true
+  };
+}
+
 function rateLimited(ip) {
   const now = Date.now();
   // Prune idle buckets so a long-lived process cannot grow this map without bound.
@@ -319,7 +345,7 @@ const server = http.createServer(async (req, res) => {
 
       if (req.method === 'GET' && sub === '/financials') {
         if (source) return json(res, 200, source.world.financials());
-        return json(res, 200, saved.kpis);
+        return json(res, 200, saved.financials || deriveFinancials(saved));
       }
 
       if (req.method === 'GET' && sub === '/ledger') {

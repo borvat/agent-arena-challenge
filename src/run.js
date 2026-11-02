@@ -116,6 +116,7 @@ class SimulationRun {
         seed: this.scenario.seed
       },
       kpis: this.world.kpis(),
+      financials: this.world.financials(),
       agents: Object.values(ROLES).map((r) => ({
         id: r.id,
         title: r.title,

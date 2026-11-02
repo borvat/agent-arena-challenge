@@ -228,6 +228,15 @@ class World {
       inventoryValue: this.inventoryValue(),
       receivables: this.receivablesValue(),
       inventoryUnits: this.inventoryUnits(),
+      // Rolling 7-day demand per SKU (sold + unserved) so cover stays honest after stockouts.
+      cover: Object.fromEntries(
+        this.skus.map((sku) => {
+          const recent = s.days.slice(-7);
+          const demandSum = recent.reduce((sum, d) => sum + ((d.demand && d.demand[sku.id]) || 0), 0);
+          const daily = Math.max(0.5, demandSum / Math.max(1, recent.length));
+          return [sku.id, Math.round(((s.inventory[sku.id] || 0) / daily) * 10) / 10];
+        })
+      ),
       inventory: { ...s.inventory },
       prices: { ...s.prices },
       creditTermsDays: s.creditTermsDays,
@@ -237,6 +246,7 @@ class World {
       salesOrders: s.salesOrders.slice(-30),
       activeEvents: s.activeEvents.map((e) => ({ type: e.type, label: e.label, endsDay: e.day + e.duration })),
       days: s.days.slice(-60),
+      auditTail: s.audit.slice(-80),
       totals: { ...s.totals },
       riskViolations: s.riskViolations.slice(-50),
       blockedOps: s.blockedOps.slice(-50),
@@ -660,6 +670,7 @@ class World {
     // inventory account and the physical stock can never drift apart.
     const trend = this.scenario.demandTrend || 0;
     const transit = this.config.transitDays + Math.round((this.state.freightMultiplier - 1) * 2);
+    const demandToday = {};
     for (const sku of this.skus) {
       const price = this.state.prices[sku.id];
       const comp = this.state.competitorPrices[sku.id];
@@ -672,6 +683,7 @@ class World {
       const rawDemand =
         sku.baseDemand * trendMult * priceFactor * this.eventMultiplier(sku.id) * promoMult * creditMult * noise;
       const demand = Math.max(0, Math.round(rawDemand));
+      demandToday[sku.id] = demand;
       if (demand === 0) continue;
 
       const qty = Math.min(demand, this.state.inventory[sku.id] || 0);
@@ -818,6 +830,7 @@ class World {
       revenue: this.state.totals.revenue,
       unitsSold: this.state.totals.unitsSold,
       lostUnits: this.state.totals.lostUnits,
+      demand: demandToday,
       activeEvents: this.state.activeEvents.map((e) => e.type)
     });
 
